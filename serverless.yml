@@ -1,0 +1,99 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: backend # NOTE: update this with your service name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+custom:
+  secrets: ${file(secrets.json)}
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  profile: propertyPulse
+  environment:
+    JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
+    DB: ${self:custom.secrets.DB}
+
+functions:
+  verify-token:
+    handler: src/modules/auth/VerifyToken.auth
+
+  login:
+    handler: src/modules/auth/AuthHandler.login
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+
+  register:
+    handler: src/modules/auth/AuthHandler.register
+    events:
+      - http:
+          path: register
+          method: post
+          cors: true
+
+  provision:
+    handler: src/modules/kiosk/handler.provision
+    events:
+      - http:
+          path: provision
+          method: post
+          cors: true
+
+  me:
+    handler: src/modules/auth/AuthHandler.me
+    events:
+      - http:
+          path: me
+          method: get
+          cors: true
+          authorizer: verify-token
+
+  getQuestion:
+    handler: src/modules/question/handler.getQuestion
+    events:
+      - http:
+          path: question
+          method: get
+          cors: true
+          authorizer: verify-token
+
+  response:
+    handler: src/modules/kiosk/handler.response
+    events:
+      - http:
+          path: response
+          method: post
+          cors: true
+          authorizer: verify-token
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+
+plugins:
+  - serverless-offline
