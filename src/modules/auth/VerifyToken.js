@@ -29,7 +29,17 @@ module.exports.auth = (event, context, callback) => {
     if (err) return callback(null, 'Unauthorized');
 
     // if everything is good, save to request for use in other routes
-    return callback(null, generatePolicy(decoded.id, 'Allow', event.methodArn));
+    return callback(
+      null,
+      generatePolicy(
+        decoded.id,
+        'Allow',
+        event.methodArn
+          .split('/')
+          .slice(0, 2)
+          .join('/') + '/*'
+      )
+    );
   });
 };
 
