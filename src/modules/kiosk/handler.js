@@ -46,9 +46,19 @@ module.exports.ping = (event, context) => {
   // add ping endpoint for kiosks to update lastActive and receive question
 };
 
-module.exports.question = (event, context) => {
+module.exports.kiosk = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  // add ping endpoint for kiosks to update lastActive and receive question
+  return connectToDatabase()
+    .then(() => findKioskById(event.requestContext.authorizer.principalId))
+    .then(kiosk => ({
+      statusCode: 200,
+      body: JSON.stringify(kiosk),
+    }))
+    .catch(err => ({
+      statusCode: err.statusCode || 500,
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ stack: err.stack, message: err.message }),
+    }));
 };
 
 module.exports.response = (event, context) => {
@@ -77,6 +87,13 @@ module.exports.response = (event, context) => {
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
+
+function findKioskById(kioskId) {
+  return Kiosk.findById(kioskId)
+    .populate('question')
+    .then(kiosk => (!kiosk ? Promise.reject('No kiosk found.') : kiosk))
+    .catch(err => Promise.reject(new Error(err)));
+}
 
 function findKioskByProvisionCode(provisionCode) {
   return Kiosk.findOne({ provisionCode })

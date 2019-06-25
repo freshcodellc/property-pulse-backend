@@ -56,6 +56,15 @@ functions:
           method: post
           cors: true
 
+  kiosk:
+    handler: src/modules/kiosk/handler.kiosk
+    events:
+      - http:
+          path: kiosk
+          method: get
+          cors: true
+          authorizer: verify-token
+
   me:
     handler: src/modules/auth/AuthHandler.me
     events:
