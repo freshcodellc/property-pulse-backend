@@ -92,6 +92,15 @@ functions:
           cors: true
           authorizer: verify-token
 
+  responses:
+    handler: src/modules/kiosk/handler.responses
+    events:
+      - http:
+          path: responses
+          method: post
+          cors: true
+          authorizer: verify-token
+
 resources:
   Resources:
     GatewayResponseDefault4XX:

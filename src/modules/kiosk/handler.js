@@ -5,6 +5,7 @@ const Kiosk = require('../../models/Kiosk');
 const Question = require('../../models/Question');
 const Response = require('../../models/Response');
 const jwt = require('jsonwebtoken');
+const subDays = require('date-fns/sub_days');
 
 module.exports.provision = async (event, context) => {
   // Validate provision code and return JWT + active question
@@ -63,7 +64,6 @@ module.exports.kiosk = (event, context) => {
 
 module.exports.response = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  // add ping endpoint for kiosks to update lastActive and receive question
   let body;
   try {
     body = JSON.parse(event.body);
@@ -87,6 +87,39 @@ module.exports.response = (event, context) => {
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
+
+module.exports.responses = (event, context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  let body;
+  try {
+    body = JSON.parse(event.body);
+  } catch (err) {
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ message: 'Bad Request. Could not parse request body.' }),
+    };
+  }
+  return connectToDatabase()
+    .then(() => getResponsesByDate(body.days))
+    .then(response => ({
+      statusCode: 200,
+      body: JSON.stringify(response),
+    }))
+    .catch(err => ({
+      statusCode: err.statusCode || 500,
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ stack: err.stack, message: err.message }),
+    }));
+};
+
+function getResponsesByDate(days) {
+  return Response.find({
+    createdAt: {
+      $gte: subDays(new Date(), days),
+    },
+  }).populate('question');
+}
 
 function findKioskById(kioskId) {
   return Kiosk.findById(kioskId)
