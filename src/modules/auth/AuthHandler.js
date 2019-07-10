@@ -95,7 +95,7 @@ function register(eventBody) {
     .then(
       hash => User.create({ name: eventBody.name, email: eventBody.email, password: hash }) // create the new user
     )
-    .then(user => ({ auth: true, token: signToken(user._id) })); // sign the token and send it back
+    .then(user => ({ auth: true, token: signToken(user._id), user })); // sign the token and send it back
 }
 
 function login(eventBody) {
@@ -103,18 +103,18 @@ function login(eventBody) {
     .then(user =>
       !user
         ? Promise.reject(new Error('User with that email does not exits.'))
-        : comparePassword(eventBody.password, user.password, user._id)
+        : comparePassword(eventBody.password, user.password, user)
     )
-    .then(token => ({ auth: true, token: token }));
+    .then(({ token, user }) => ({ auth: true, token, user }));
 }
 
-function comparePassword(eventPassword, userPassword, userId) {
+function comparePassword(eventPassword, userPassword, user) {
   return bcrypt
     .compare(eventPassword, userPassword)
     .then(passwordIsValid =>
       !passwordIsValid
         ? Promise.reject(new Error('The credentials do not match.'))
-        : signToken(userId)
+        : { token: signToken(user._id), user }
     );
 }
 
@@ -122,6 +122,8 @@ function comparePassword(eventPassword, userPassword, userId) {
 async function me(userId) {
   return User.findById(userId, { password: 0 })
     .populate('company')
-    .then(user => (!user ? Promise.reject('No user found.') : user))
+    .then(user =>
+      !user ? Promise.reject('No user found.') : { token: signToken(user._id), user }
+    )
     .catch(err => Promise.reject(new Error(err)));
 }
