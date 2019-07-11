@@ -9,11 +9,19 @@ module.exports.getQuestion = (event, context) => {
     .then(() => console.log('E', event))
     .then(session => ({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify(session),
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };

@@ -17,7 +17,11 @@ module.exports.provision = async (event, context) => {
   } catch (err) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ message: 'Bad Request. Could not find a provisionCode.' }),
     };
   }
@@ -28,11 +32,19 @@ module.exports.provision = async (event, context) => {
     .then(kiosk => authorizeKiosk(kiosk))
     .then(response => ({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify(response),
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
@@ -53,11 +65,19 @@ module.exports.kiosk = (event, context) => {
     .then(() => findKioskById(event.requestContext.authorizer.principalId))
     .then(kiosk => ({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify(kiosk),
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
@@ -70,7 +90,11 @@ module.exports.response = (event, context) => {
   } catch (err) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ message: 'Bad Request. Could not parse request body.' }),
     };
   }
@@ -79,11 +103,19 @@ module.exports.response = (event, context) => {
     .then(question => sendResponse(body, question))
     .then(response => ({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify(response),
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
@@ -96,7 +128,11 @@ module.exports.responses = (event, context) => {
   } catch (err) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ message: 'Bad Request. Could not parse request body.' }),
     };
   }
@@ -104,11 +140,19 @@ module.exports.responses = (event, context) => {
     .then(() => getResponsesByDate(body.days))
     .then(response => ({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify(response),
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({ stack: err.stack, message: err.message }),
     }));
 };
