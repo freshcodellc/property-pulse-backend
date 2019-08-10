@@ -36,7 +36,7 @@ functions:
     handler: src/modules/auth/AuthHandler.login
     events:
       - http:
-          path: login
+          path: v1/login
           method: post
           cors: true
 
@@ -44,7 +44,7 @@ functions:
     handler: src/modules/auth/AuthHandler.register
     events:
       - http:
-          path: register
+          path: v1/register
           method: post
           cors: true
 
@@ -52,7 +52,7 @@ functions:
     handler: src/modules/kiosk/handler.provision
     events:
       - http:
-          path: provision
+          path: v1/provision
           method: post
           cors: true
 
@@ -60,7 +60,7 @@ functions:
     handler: src/modules/kiosk/handler.kiosk
     events:
       - http:
-          path: kiosk
+          path: v1/kiosk
           method: get
           cors: true
           authorizer: verify-token
@@ -69,7 +69,7 @@ functions:
     handler: src/modules/auth/AuthHandler.me
     events:
       - http:
-          path: me
+          path: v1/me
           method: get
           cors: true
           authorizer: verify-token
@@ -78,7 +78,7 @@ functions:
     handler: src/modules/question/handler.getQuestion
     events:
       - http:
-          path: question
+          path: v1/question
           method: get
           cors: true
           authorizer: verify-token
@@ -87,7 +87,7 @@ functions:
     handler: src/modules/kiosk/handler.response
     events:
       - http:
-          path: response
+          path: v1/response
           method: post
           cors: true
           authorizer: verify-token
@@ -96,7 +96,7 @@ functions:
     handler: src/modules/kiosk/handler.responses
     events:
       - http:
-          path: responses
+          path: v1/responses
           method: post
           cors: true
           authorizer: verify-token
